@@ -203,14 +203,6 @@ pub struct FontTexture {
 pub enum Error {
     /// A glyph for this character is not present in font.
     NoGlyph(char),
-    /// An Error that comes directly from Rusttype.
-    RusttypeError(rusttype::Error),
-}
-
-impl From<rusttype::Error> for Error {
-    fn from(error: rusttype::Error) -> Self {
-        Error::RusttypeError(error)
-    }
 }
 
 /// Object that contains the elements shared by all `TextDisplay` objects.
@@ -300,8 +292,7 @@ impl FontTexture {
         // building the freetype face object
         let font: Vec<u8> = font.bytes().map(|c| c.unwrap()).collect();
 
-        let collection = ::rusttype::FontCollection::from_bytes(&font[..])?;
-        let font = collection.into_font().unwrap();
+        let font = rusttype::Font::try_from_bytes(&font[..]).unwrap();
 
         // building the infos
         let (texture_data, chr_infos) =
