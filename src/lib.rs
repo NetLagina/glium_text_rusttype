@@ -276,7 +276,7 @@ implement_vertex!(VertexFormat, position, tex_coords);
 impl FontTexture {
     /// Vec<char> of complete ASCII range (from 0 to 255 bytes)
     pub fn ascii_character_list() -> Vec<char> {
-        (0 .. 255).filter_map(::std::char::from_u32).collect()
+        (0 .. 255).filter_map(std::char::from_u32).collect()
     }
 
     /// Creates a new texture representing a font stored in a `FontTexture`.
@@ -645,10 +645,10 @@ fn build_font_image<I>(font: &rusttype::Font, characters_list: I, font_size: u32
         // loading wanted glyph in the font face
         // hope scale will set the right pixel size
         let scaled_glyph = font.glyph(character)
-            .scaled(::rusttype::Scale {x : font_size as f32, y : font_size as f32 });
+            .scaled(rusttype::Scale {x : font_size as f32, y : font_size as f32 });
         let h_metrics = scaled_glyph.h_metrics();
         let glyph = scaled_glyph
-            .positioned(::rusttype::Point {x : 0.0, y : 0.0 });
+            .positioned(Point {x : 0.0, y : 0.0 });
 
         let bb = glyph.pixel_bounding_box();
         // if no bounding box - we suppose that its invalid character but want it to be draw as empty quad
@@ -707,7 +707,7 @@ fn build_font_image<I>(font: &rusttype::Font, characters_list: I, font_size: u32
                 for x in 0 .. bitmap.width {
                     // the values in source are bytes between 0 and 255, but we want floats between 0 and 1
                     let val: u8 = source[x as usize];
-                    let val = f32::from(val) / f32::from(std::u8::MAX);
+                    let val = f32::from(val) / f32::from(u8::MAX);
                     let dest = &mut destination[x as usize];
                     *dest = val;
                 }
@@ -741,7 +741,7 @@ fn build_font_image<I>(font: &rusttype::Font, characters_list: I, font_size: u32
 
     // now our texture is finished
     // we know its final dimensions, so we can divide all the pixels values into (0,1) range
-    assert!((texture_data.len() as u32 % texture_width) == 0);
+    assert_eq!((texture_data.len() as u32 % texture_width), 0);
     let texture_height = (texture_data.len() as u32 / texture_width) as f32;
     let float_texture_width = texture_width as f32;
     let mut characters_infos = characters_infos.into_iter().map(|mut chr| {
